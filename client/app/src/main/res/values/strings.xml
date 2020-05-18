@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">JigSolveClient</string>
+    <string name="app_name">JigSolve</string>
+
+    <string name="activity_tittle_start">Start</string>
+    <string name="activity_tittle_home">Home</string>
+
+    <!-- Toasts-->
+    <string name="load_picture_warning">Load picture image first.</string>
+    <string name="load_puzzle_warning">Load puzzle image first.</string>
+
 </resources>
