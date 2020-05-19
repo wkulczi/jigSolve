@@ -3,3 +3,4 @@ env/Include
 env/Lib
 env/Scripts
 env/pyvenv.cfg
+env/jigSolve/__pycache__
