@@ -68,7 +68,7 @@ public class HomeActivity extends BaseActivity implements HomeView {
         if(pictureImage == null) showPictureImgRequired();
         if(puzzleImage == null) showPuzzleImgRequired();
         else {
-            Navigator.startHome(this);
+            Navigator.startResult(this);
         }
     }
 
@@ -79,22 +79,24 @@ public class HomeActivity extends BaseActivity implements HomeView {
 
             if(requestCode==REQUEST_CAMERA){
 
-                Bundle bundle = data.getExtras();
-
-                setPuzzle((Bitmap) bundle.get("data"));
+                Bundle bundle;
+                if (data != null) {
+                    bundle = data.getExtras();
+                    setPuzzle((Bitmap) bundle.get("data"));
+                }
 
             }else if(requestCode==SELECT_FILE){
 
-                setPicture(data.getData());
+                if (data != null) {
+                    setPicture(data.getData());
+                    int dimensionInPixel = 200;
+                    puzzlePictureImage.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dimensionInPixel, getResources().getDisplayMetrics());
+                    puzzlePictureImage.requestLayout();
 
-                int dimensionInPixel = 200;
-                int dimensionInDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dimensionInPixel, getResources().getDisplayMetrics());
-                puzzlePictureImage.getLayoutParams().height = dimensionInDp;
-                puzzlePictureImage.requestLayout();
+                    puzzlePictureImage.setBackgroundResource(R.drawable.image_border);
 
-                puzzlePictureImage.setBackgroundResource(R.drawable.image_border);
-
-                puzzlePictureImage.setImageURI(pictureImage);
+                    puzzlePictureImage.setImageURI(pictureImage);
+                }
             }
 
         }

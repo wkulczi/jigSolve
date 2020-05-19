@@ -32,6 +32,9 @@
             android:label="@string/activity_tittle_home"
             android:parentActivityName=".view.start.StartActivity">
         </activity>
+        <activity android:name=".view.result.ResultActivity"
+            android:label="@string/activity_tittle_result"
+            android:parentActivityName=".view.home.HomeActivity"/>
 
         <activity android:name=".view.picture.PictureLoadActivity" />
 
