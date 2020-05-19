@@ -1,4 +1,4 @@
-package com.example.jigsolveclient;
+package com.example.jigsolveclient.camera;
 
 import android.Manifest;
 import android.content.Context;
@@ -16,7 +16,6 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -24,25 +23,24 @@ import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
-import android.widget.CompoundButton;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import com.example.jigsolveclient.MainActivity;
+import com.example.jigsolveclient.R;
+import com.example.jigsolveclient.TcpClient;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static android.os.SystemClock.sleep;
-
 public class CameraActivity extends AppCompatActivity {
-
-    private ToggleButton btn_capture;
-    private TextureView textureView;
 
     //Check state orientation of output image
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
@@ -60,30 +58,15 @@ public class CameraActivity extends AppCompatActivity {
     private CaptureRequest.Builder captureRequestBuilder;
     private Size imageDimension;
     private ImageReader imageReader;
+    private Button btn_take_photo;
+    private TextureView textureView;
+    private static TcpClient tcpClient;
+
 
     //Save to FILE
     private static final int REQUEST_CAMERA_PERMISSION = 200;
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
-
-    CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
-        @Override
-        public void onOpened(@NonNull CameraDevice camera) {
-            cameraDevice = camera;
-            createCameraPreview();
-        }
-
-        @Override
-        public void onDisconnected(@NonNull CameraDevice cameraDevice) {
-            cameraDevice.close();
-        }
-
-        @Override
-        public void onError(@NonNull CameraDevice cameraDevice, int i) {
-            cameraDevice.close();
-            cameraDevice = null;
-        }
-    };
 
 
     @Override
@@ -91,17 +74,52 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
+        tcpClient= new TcpClient();
+        tcpClient.connect(MainActivity.server_address,MainActivity.server_port);
+
         textureView = (TextureView) findViewById(R.id.textureView);
         //From Java 1.4 , you can use keyword 'assert' to check expression true or false
         assert textureView != null;
         textureView.setSurfaceTextureListener(textureListener);
-        btn_capture = (ToggleButton) findViewById(R.id.btn_capture);
-        btn_capture.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                new ToggleTask().execute();
-                MenuActivity.rtpClient.TogglePause();
+        btn_take_photo = (Button) findViewById(R.id.btn_take_photo);
+        btn_take_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                takePicture(true);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startBackgroundThread();
+        if (textureView.isAvailable())
+            openCamera();
+        else
+            textureView.setSurfaceTextureListener(textureListener);
+    }
+
+    @Override
+    protected void onPause() {
+        stopBackgroundThread();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy(){
+        tcpClient.disconnect();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "You can't use camera without permission", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
     }
 
     private void takePicture(boolean is_last) {
@@ -145,7 +163,7 @@ public class CameraActivity extends AppCompatActivity {
                         byte[] bytes = new byte[buffer.capacity()];
                         buffer.get(bytes, 0, bytes.length);
 
-                        MenuActivity.tcpClient.sendBytes(bytes);
+                        tcpClient.sendBytes(bytes);
                     } finally {
                         {
                             if (image != null)
@@ -157,7 +175,7 @@ public class CameraActivity extends AppCompatActivity {
 
             reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
             final CameraCaptureSession.CaptureCallback captureListener;
-            if(is_last){
+            if (is_last) {
                 captureListener = new CameraCaptureSession.CaptureCallback() {
                     @Override
                     public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
@@ -165,9 +183,9 @@ public class CameraActivity extends AppCompatActivity {
                         createCameraPreview();
                     }
                 };
-            }
-            else{
-                captureListener = new CameraCaptureSession.CaptureCallback() {};
+            } else {
+                captureListener = new CameraCaptureSession.CaptureCallback() {
+                };
             }
 
             cameraDevice.createCaptureSession(outputSurface, new CameraCaptureSession.StateCallback() {
@@ -190,6 +208,25 @@ public class CameraActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
+        @Override
+        public void onOpened(@NonNull CameraDevice camera) {
+            cameraDevice = camera;
+            createCameraPreview();
+        }
+
+        @Override
+        public void onDisconnected(@NonNull CameraDevice cameraDevice) {
+            cameraDevice.close();
+        }
+
+        @Override
+        public void onError(@NonNull CameraDevice cameraDevice, int i) {
+            cameraDevice.close();
+            cameraDevice = null;
+        }
+    };
 
     private void createCameraPreview() {
         try {
@@ -274,30 +311,10 @@ public class CameraActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CAMERA_PERMISSION) {
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "You can't use camera without permission", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        startBackgroundThread();
-        if (textureView.isAvailable())
-            openCamera();
-        else
-            textureView.setSurfaceTextureListener(textureListener);
-    }
-
-    @Override
-    protected void onPause() {
-        stopBackgroundThread();
-        super.onPause();
+    private void startBackgroundThread() {
+        mBackgroundThread = new HandlerThread("Camera Background");
+        mBackgroundThread.start();
+        mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
     }
 
     private void stopBackgroundThread() {
@@ -311,22 +328,5 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    private void startBackgroundThread() {
-        mBackgroundThread = new HandlerThread("Camera Background");
-        mBackgroundThread.start();
-        mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
-    }
 
-    public class ToggleTask extends AsyncTask<String, byte[], byte[]> {
-        @Override
-        protected byte[] doInBackground(String... strings) {
-            while (btn_capture.isChecked()) {
-                takePicture(false);
-                sleep(1000); // 1 fps
-            }
-            sleep(1000);
-            takePicture(true);
-            return null;
-        }
-    }
 }
