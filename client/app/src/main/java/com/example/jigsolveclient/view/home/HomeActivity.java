@@ -23,6 +23,7 @@ import com.example.jigsolveclient.navigator.Navigator;
 import butterknife.BindView;
 import butterknife.OnClick;
 
+
 public class HomeActivity extends BaseActivity implements HomeView {
 
     private static Integer REQUEST_CAMERA = 1;
@@ -83,6 +84,7 @@ public class HomeActivity extends BaseActivity implements HomeView {
                 if (data != null) {
                     bundle = data.getExtras();
                     setPuzzle((Bitmap) bundle.get("data"));
+                    HttpClient.sendPicture(puzzleImage,"http://192.168.1.23/upload-puzzle");
                 }
 
             }else if(requestCode==SELECT_FILE){
@@ -93,7 +95,7 @@ public class HomeActivity extends BaseActivity implements HomeView {
                     puzzlePictureImage.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dimensionInPixel, getResources().getDisplayMetrics());
                     puzzlePictureImage.requestLayout();
 
-                    HttpClient.sendPicture(puzzleImage,"http://localhost/upload-puzzle");
+
 
                     puzzlePictureImage.setBackgroundResource(R.drawable.image_border);
 

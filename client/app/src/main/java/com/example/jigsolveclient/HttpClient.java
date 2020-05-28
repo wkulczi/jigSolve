@@ -70,7 +70,9 @@ public class HttpClient {
         return response;
     }
 
-    public static HttpResponse sendPicture(Bitmap bitmap, String url_string){
+    public static String sendPicture(Bitmap bitmap, String url_string){
+//        HttpResponse response = new HttpResponse();
+
         try {
             URL url = new URL(url_string);
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
@@ -88,6 +90,8 @@ public class HttpClient {
         } catch (IOException e) {
             Log.e("ImageUploader", "Error uploading image", e);
         }
+
+        return "";
     }
 }
 
