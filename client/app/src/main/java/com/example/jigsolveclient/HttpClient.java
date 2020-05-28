@@ -1,17 +1,20 @@
 package com.example.jigsolveclient;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Scanner;
 
 
-class HttpClient {
+public class HttpClient {
     static HttpResponse sendRequest(String method, String serverAddr, String route) {
         HttpResponse response = new HttpResponse();
 
@@ -65,6 +68,26 @@ class HttpClient {
             e.printStackTrace();
         }
         return response;
+    }
+
+    public static HttpResponse sendPicture(Bitmap bitmap, String url_string){
+        try {
+            URL url = new URL(url_string);
+            HttpURLConnection c = (HttpURLConnection) url.openConnection();
+            c.setDoInput(true);
+            c.setRequestMethod("POST");
+            c.setDoOutput(true);
+            c.connect();
+            OutputStream output = c.getOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, output);
+            output.close();
+            Scanner result = new Scanner(c.getInputStream());
+            String response = result.nextLine();
+            Log.e("ImageUploader", "Error uploading image: " + response);
+            result.close();
+        } catch (IOException e) {
+            Log.e("ImageUploader", "Error uploading image", e);
+        }
     }
 }
 

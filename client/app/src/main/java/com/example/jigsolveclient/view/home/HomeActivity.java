@@ -15,9 +15,9 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.example.jigsolveclient.HttpClient;
 import com.example.jigsolveclient.R;
 import com.example.jigsolveclient.base.BaseActivity;
-import com.example.jigsolveclient.base.BaseView;
 import com.example.jigsolveclient.navigator.Navigator;
 
 import butterknife.BindView;
@@ -92,6 +92,8 @@ public class HomeActivity extends BaseActivity implements HomeView {
                     int dimensionInPixel = 200;
                     puzzlePictureImage.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dimensionInPixel, getResources().getDisplayMetrics());
                     puzzlePictureImage.requestLayout();
+
+                    HttpClient.sendPicture(puzzleImage,"http://localhost/upload-puzzle");
 
                     puzzlePictureImage.setBackgroundResource(R.drawable.image_border);
 
