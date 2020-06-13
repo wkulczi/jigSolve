@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.util.TypedValue;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,6 +20,8 @@ import com.example.jigsolveclient.R;
 import com.example.jigsolveclient.base.BaseActivity;
 import com.example.jigsolveclient.base.BaseView;
 import com.example.jigsolveclient.navigator.Navigator;
+
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -83,6 +86,12 @@ public class HomeActivity extends BaseActivity implements HomeView {
                 if (data != null) {
                     bundle = data.getExtras();
                     setPuzzle((Bitmap) bundle.get("data"));
+
+                    try {
+                        presenter.attemptToLoadSinglePuzzle(puzzleImage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             }else if(requestCode==SELECT_FILE){
@@ -96,6 +105,8 @@ public class HomeActivity extends BaseActivity implements HomeView {
                     puzzlePictureImage.setBackgroundResource(R.drawable.image_border);
 
                     puzzlePictureImage.setImageURI(pictureImage);
+
+                    presenter.attemptToLoadPicture(data.getData());
                 }
             }
 
@@ -109,7 +120,7 @@ public class HomeActivity extends BaseActivity implements HomeView {
 
         presenter = new HomePresenter();
 
-        presenter.created();
+        presenter.setView(this);
     }
 
     @Override
