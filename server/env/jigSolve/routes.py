@@ -16,7 +16,7 @@ def home():
 def post_one_puzzle():
     one_puzzle = request.files['puzzle']
     filename = 'jeden_puzzel.png'
-    entire_puzzles.save(filename)
+    one_puzzle.save(filename)
 
 
     # one_puzzle = json.loads(request.data)

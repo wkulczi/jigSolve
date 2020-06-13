@@ -8,17 +8,17 @@ URL = 'http://127.0.0.1:80/'
 
 def post_one_puzzle():
     endpoint = '/upload-puzzle'
-    data = {'puzzle_piece_picture': open('puzzle_piece.png', 'rb')}
+    data = {'puzzle': open('puzzle_piece.png', 'rb')}
     response = requests.post(URL+endpoint, files=data)
     print(response.content)
 
 def post_entire_puzzles():
     endpoint = '/upload-puzzles'
-    data = {'entire_puzzles_picture': open('puzzles_picture.png', 'rb')}
+    data = {'picture': open('puzzles_picture.png', 'rb')}
     response = requests.post(URL+endpoint, files=data)
     print(response.content)
 
 
 if __name__ == '__main__':
     post_one_puzzle()
-    post_entire_puzzles()
+    #post_entire_puzzles()
