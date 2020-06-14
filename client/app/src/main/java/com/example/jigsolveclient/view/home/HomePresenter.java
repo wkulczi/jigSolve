@@ -1,7 +1,10 @@
 package com.example.jigsolveclient.view.home;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.jigsolveclient.base.BasePresenter;
@@ -12,6 +15,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -25,45 +33,46 @@ class HomePresenter extends BasePresenter<HomeView> {
 
 
 
-    void attemptToLoadSinglePuzzle(Bitmap puzzle) throws IOException {
+    void attemptToLoadSinglePuzzle(Bitmap puzzle) {
 
         File puzzleFileToUpload = convertBitmapToFile("puzzle", puzzle);
 
-        RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), puzzleFileToUpload);
-        //MultipartBody.Part body = MultipartBody.Part.createFormData("picture", puzzleFileToUpload.getName(), reqFile);
-        MultipartBody.Part body = MultipartBody.Part.create(reqFile);
+        RequestBody reqFile = RequestBody.create(MediaType.parse("image/jpg"), puzzleFileToUpload);
+
+
+        MultipartBody.Part body = MultipartBody.Part.createFormData("puzzle", puzzleFileToUpload.getName(), reqFile);
 
         Call<ResponseBody> call = RestClient.getInstance().uploadPuzzle(body);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Toast.makeText(view.getContext(), response.message(), Toast.LENGTH_SHORT).show();
+                Log.v("Upload", "success");
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Upload error", t.getMessage());
                 }
         });
     }
 
-    void attemptToLoadPicture(final Uri pictureUri) {
-        File puzzlePictureFile = convertUriToFile("picture", pictureUri);
+    void attemptToLoadPicture(final InputStream pictureInputStream) {
+        File puzzlePictureFile = convertInputStreamToFile("picture", pictureInputStream);
 
-        RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), puzzlePictureFile);
-        MultipartBody.Part body = MultipartBody.Part.create(reqFile);
+        RequestBody reqFile = RequestBody.create(MediaType.parse("image/jpg"), puzzlePictureFile);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("picture", puzzlePictureFile.getName(), reqFile);
 
         Call<ResponseBody> call = RestClient.getInstance().uploadPuzzlePicture(body);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Toast.makeText(view.getContext(), response.message(), Toast.LENGTH_SHORT).show();
-            }
+                Log.v("Upload", "success");}
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                Log.e("Upload_error", t.getMessage());
             }
         });
     }
@@ -72,11 +81,29 @@ class HomePresenter extends BasePresenter<HomeView> {
 
     }
 
-    private File convertUriToFile(String filename, Uri puzzlePictureUri) {
-        return new File(filename, puzzlePictureUri.getPath());
+    private File convertInputStreamToFile(String filename, final InputStream pictureInputStream) {
+
+        File file = new File(view.getContext().getCacheDir(), filename);
+
+        try{
+        OutputStream os = new FileOutputStream(file);
+        byte[] buf = new byte[1024];
+
+        int len;
+        while ((len = pictureInputStream.read(buf)) > 0) {
+            os.write(buf, 0, len);
+        }
+        os.flush();
+        os.close();
+            pictureInputStream.close();}
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
     }
 
     private File convertBitmapToFile(String filename, Bitmap puzzleBitmap){
+
         File f = new File(view.getContext().getCacheDir(), filename);
         try {
             f.createNewFile();
@@ -85,25 +112,22 @@ class HomePresenter extends BasePresenter<HomeView> {
         }
 
         //Convert bitmap to byte array
-        Bitmap bitmap = puzzleBitmap;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 0 /*ignored for PNG*/, bos);
-        byte[] bitmapdata = bos.toByteArray();
+        puzzleBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
 
         //write the bytes in file
-        FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(f);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            fos.write(bitmapdata);
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(bos.toByteArray());
             fos.flush();
             fos.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return f;
     }
 }

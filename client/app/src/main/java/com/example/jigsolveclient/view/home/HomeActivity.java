@@ -2,11 +2,14 @@ package com.example.jigsolveclient.view.home;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.TypedValue;
@@ -21,7 +24,14 @@ import com.example.jigsolveclient.base.BaseActivity;
 import com.example.jigsolveclient.base.BaseView;
 import com.example.jigsolveclient.navigator.Navigator;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -47,6 +57,7 @@ public class HomeActivity extends BaseActivity implements HomeView {
 
     private Uri pictureImage;
     private Bitmap puzzleImage;
+    private Uri imageUri;
 
     public static Intent getStartingIntent(Context context) {
         return new Intent(context, HomeActivity.class);
@@ -85,13 +96,10 @@ public class HomeActivity extends BaseActivity implements HomeView {
                 Bundle bundle;
                 if (data != null) {
                     bundle = data.getExtras();
+
                     setPuzzle((Bitmap) bundle.get("data"));
 
-                    try {
-                        presenter.attemptToLoadSinglePuzzle(puzzleImage);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    presenter.attemptToLoadSinglePuzzle(puzzleImage);
                 }
 
             }else if(requestCode==SELECT_FILE){
@@ -106,7 +114,15 @@ public class HomeActivity extends BaseActivity implements HomeView {
 
                     puzzlePictureImage.setImageURI(pictureImage);
 
-                    presenter.attemptToLoadPicture(data.getData());
+                    try {
+                        InputStream is = getContentResolver().openInputStream(pictureImage);
+
+                        presenter.attemptToLoadPicture(is);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
                 }
             }
 
