@@ -32,7 +32,6 @@ import retrofit2.Response;
 class HomePresenter extends BasePresenter<HomeView> {
 
 
-
     void attemptToLoadSinglePuzzle(Bitmap puzzle) {
 
         File puzzleFileToUpload = convertBitmapToFile("puzzle", puzzle);
@@ -53,7 +52,7 @@ class HomePresenter extends BasePresenter<HomeView> {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e("Upload error", t.getMessage());
-                }
+            }
         });
     }
 
@@ -68,7 +67,8 @@ class HomePresenter extends BasePresenter<HomeView> {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.v("Upload", "success");}
+                Log.v("Upload", "success");
+            }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
@@ -77,32 +77,47 @@ class HomePresenter extends BasePresenter<HomeView> {
         });
     }
 
-    void attemptToStartSolveProcess() {
+    void attemptToReceiveMatchedPuzzle() {
+        Call<ResponseBody> call = RestClient.getInstance().getProcessResult();
 
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.v("Match_receive", "success");
+                File resultPictureFile = convertInputStreamToFile("result", response.body().byteStream());
+                Log.d("image", resultPictureFile.toString());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Match_receive_error", t.getMessage());
+            }
+        });
+        //
     }
 
     private File convertInputStreamToFile(String filename, final InputStream pictureInputStream) {
 
         File file = new File(view.getContext().getCacheDir(), filename);
 
-        try{
-        OutputStream os = new FileOutputStream(file);
-        byte[] buf = new byte[1024];
+        try {
+            OutputStream os = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
 
-        int len;
-        while ((len = pictureInputStream.read(buf)) > 0) {
-            os.write(buf, 0, len);
-        }
-        os.flush();
-        os.close();
-            pictureInputStream.close();}
-        catch (IOException e) {
+            int len;
+            while ((len = pictureInputStream.read(buf)) > 0) {
+                os.write(buf, 0, len);
+            }
+            os.flush();
+            os.close();
+            pictureInputStream.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return file;
     }
 
-    private File convertBitmapToFile(String filename, Bitmap puzzleBitmap){
+    private File convertBitmapToFile(String filename, Bitmap puzzleBitmap) {
 
         File f = new File(view.getContext().getCacheDir(), filename);
         try {

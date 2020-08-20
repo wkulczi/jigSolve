@@ -2,16 +2,12 @@ package com.example.jigsolveclient.view.home;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.util.TypedValue;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -21,23 +17,17 @@ import androidx.annotation.Nullable;
 
 import com.example.jigsolveclient.R;
 import com.example.jigsolveclient.base.BaseActivity;
-import com.example.jigsolveclient.base.BaseView;
 import com.example.jigsolveclient.navigator.Navigator;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
 public class HomeActivity extends BaseActivity implements HomeView {
 
+    private static Integer RECEIVE_FILE = 2;
     private static Integer REQUEST_CAMERA = 1;
     private static Integer SELECT_FILE = 0;
 
@@ -79,19 +69,20 @@ public class HomeActivity extends BaseActivity implements HomeView {
 
     @OnClick(R.id.process_button)
     protected void processButtonClick() {
-        if(pictureImage == null) showPictureImgRequired();
-        if(puzzleImage == null) showPuzzleImgRequired();
+        if (pictureImage == null) showPictureImgRequired();
+        if (puzzleImage == null) showPuzzleImgRequired();
         else {
-            Navigator.startResult(this);
+            //TODO: tu coś musi być ale nie wiem co
+            //Navigator.startResult(this);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode== Activity.RESULT_OK){
+        if (resultCode == Activity.RESULT_OK) {
 
-            if(requestCode==REQUEST_CAMERA){
+            if (requestCode == REQUEST_CAMERA) {
 
                 Bundle bundle;
                 if (data != null) {
@@ -102,7 +93,7 @@ public class HomeActivity extends BaseActivity implements HomeView {
                     presenter.attemptToLoadSinglePuzzle(puzzleImage);
                 }
 
-            }else if(requestCode==SELECT_FILE){
+            } else if (requestCode == SELECT_FILE) {
 
                 if (data != null) {
                     setPicture(data.getData());
@@ -124,8 +115,9 @@ public class HomeActivity extends BaseActivity implements HomeView {
 
 
                 }
+            } else if (requestCode == RECEIVE_FILE) {
+                presenter.attemptToReceiveMatchedPuzzle();
             }
-
         }
     }
 
@@ -140,10 +132,12 @@ public class HomeActivity extends BaseActivity implements HomeView {
     }
 
     @Override
-    public void showLoading() { }
+    public void showLoading() {
+    }
 
     @Override
-    public void hideLoading() { }
+    public void hideLoading() {
+    }
 
     @Override
     public void setProcessButtonEnable(boolean enable) {
