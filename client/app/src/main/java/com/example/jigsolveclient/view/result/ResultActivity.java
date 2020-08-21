@@ -2,6 +2,7 @@ package com.example.jigsolveclient.view.result;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,7 +15,7 @@ import com.example.jigsolveclient.base.BaseActivity;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class ResultActivity extends BaseActivity {
+public class ResultActivity extends BaseActivity implements ResultView {
 
     @BindView(R.id.result_picture_img)
     ImageView resultPicture;
@@ -24,6 +25,7 @@ public class ResultActivity extends BaseActivity {
 
     @OnClick(R.id.reset_button)
     protected void onResetButtonClick() {
+        resetResultPicture();
         finish();
     }
 
@@ -35,6 +37,11 @@ public class ResultActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
+
+        ResultPresenter presenter = new ResultPresenter();
+
+        presenter.setView(this);
+        presenter.attemptToLoadResultPicture();
     }
 
     @Override
@@ -42,4 +49,14 @@ public class ResultActivity extends BaseActivity {
 
     @Override
     public void hideLoading() { }
+
+    @Override
+    public void setResultPicture(Bitmap bitmap) {
+        resultPicture.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public void resetResultPicture() {
+        resultPicture.setImageBitmap(null);
+    }
 }

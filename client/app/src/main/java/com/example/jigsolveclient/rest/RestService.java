@@ -20,7 +20,6 @@ public interface RestService {
     @POST("upload-puzzles")
     Call<ResponseBody> uploadPuzzlePicture (@Part MultipartBody.Part filePart);
 
-    @Multipart
     @GET("match-puzzle")
     Call<ResponseBody> getProcessResult ();
 }

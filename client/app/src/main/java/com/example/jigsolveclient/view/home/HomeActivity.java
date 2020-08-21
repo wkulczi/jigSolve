@@ -73,7 +73,7 @@ public class HomeActivity extends BaseActivity implements HomeView {
         if (puzzleImage == null) showPuzzleImgRequired();
         else {
             //TODO: tu coś musi być ale nie wiem co
-            //Navigator.startResult(this);
+            Navigator.startResult(this);
         }
     }
 
@@ -115,8 +115,6 @@ public class HomeActivity extends BaseActivity implements HomeView {
 
 
                 }
-            } else if (requestCode == RECEIVE_FILE) {
-                presenter.attemptToReceiveMatchedPuzzle();
             }
         }
     }
