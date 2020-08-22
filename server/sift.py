@@ -2,9 +2,26 @@ import numpy as np
 import cv2
 
 
+def downscale_image(img, max_size):
+    base_height, base_width, base_channels = img.shape
+
+    if base_height > max_size or base_width > max_size:
+        diffrence = 0
+        if base_height < base_width:
+            diffrence = max_size / base_width
+        else:
+            diffrence = max_size / base_height
+
+        img = cv2.resize(img, (int(base_width * diffrence), int(base_height * diffrence)))
+    return img
+
+
 def process():
     base = cv2.imread('images/cale_puzzle.png')
     img = cv2.imread('images/jeden_puzzel.png')
+
+    base = downscale_image(base, 800)
+    img = downscale_image(img, 800)
 
     sift = cv2.xfeatures2d.SIFT_create()
 
@@ -35,3 +52,7 @@ def process():
                            matchesMask=matches_mask, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
     cv2.imwrite('images/dopasowanie.png', img3)
+
+
+if __name__ == '__main__':
+    process()

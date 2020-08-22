@@ -30,6 +30,6 @@ def home():
 
 if __name__ == '__main__':
     #home()
-    post_one_puzzle()
-    post_entire_puzzles()
+    # post_one_puzzle()
+    # post_entire_puzzles()
     match_puzzle()
