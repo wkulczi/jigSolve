@@ -69,9 +69,13 @@ public class HomeActivity extends BaseActivity implements HomeView {
 
     @OnClick(R.id.process_button)
     protected void processButtonClick() {
-        if (pictureImage == null) showPictureImgRequired();
-        if (puzzleImage == null) showPuzzleImgRequired();
-        else {
+        if (pictureImage == null && puzzleImage == null) {
+            showDataRequired();
+        } else if (puzzleImage == null) {
+            showPuzzleImgRequired();
+        } else if (pictureImage == null) {
+            showPictureImgRequired();
+        } else {
             //TODO: tu coś musi być ale nie wiem co
             Navigator.startResult(this);
         }
@@ -150,6 +154,11 @@ public class HomeActivity extends BaseActivity implements HomeView {
     @Override
     public void showPuzzleImgRequired() {
         Toast.makeText(this, getString(R.string.load_puzzle_warning), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showDataRequired() {
+        Toast.makeText(this, getString(R.string.load_data_warning), Toast.LENGTH_SHORT).show();
     }
 
     @Override

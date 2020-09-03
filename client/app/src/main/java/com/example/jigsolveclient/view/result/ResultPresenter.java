@@ -8,6 +8,8 @@ import com.example.jigsolveclient.base.BasePresenter;
 import com.example.jigsolveclient.rest.RestClient;
 import com.example.jigsolveclient.rest.RestService;
 
+import java.util.Objects;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,7 +33,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
                     }
                     else {
                         //TODO exception when body is empty
-                        Log.e("result-exeption", "Brak dopasowania");
+                        Log.e("result-exception", "Brak dopasowania");
                     }
                 }else {
                     //TODO exception when response isn't successful
@@ -40,7 +42,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("result-exeption", t.getMessage());
+                Log.e("result-exception", Objects.requireNonNull(t.getMessage()));
             }
         });
     }

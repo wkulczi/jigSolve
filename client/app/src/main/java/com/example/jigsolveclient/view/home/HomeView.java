@@ -11,6 +11,7 @@ public interface HomeView extends BaseView {
 
     void showPictureImgRequired();
     void showPuzzleImgRequired();
+    void showDataRequired();
 
     void onProcessButtonSucceeded();
 
