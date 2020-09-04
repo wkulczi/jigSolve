@@ -5,6 +5,8 @@
     <string name="activity_tittle_home">Home</string>
     <string name="activity_tittle_result">Result</string>
 
+    <string name="help_info"> help text here</string>
+
     <!-- Toasts-->
     <string name="load_picture_warning">Load picture image first.</string>
     <string name="load_puzzle_warning">Load puzzle image first.</string>

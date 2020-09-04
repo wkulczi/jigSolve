@@ -1,8 +1,13 @@
 package com.example.jigsolveclient.view.start;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
@@ -10,6 +15,8 @@ import androidx.annotation.Nullable;
 import com.example.jigsolveclient.R;
 import com.example.jigsolveclient.base.BaseActivity;
 import com.example.jigsolveclient.navigator.Navigator;
+
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -41,7 +48,21 @@ public class StartActivity extends BaseActivity {
 
     @OnClick(R.id.help_button)
     protected void onHelpButtonClick() {
-        //TODO start help activity on button clicked
+        AlertDialog.Builder builder = new AlertDialog.Builder(this,R.style.AlertDialog);
+
+        builder.setTitle("Help");
+        builder.setMessage(getString(R.string.help_info));
+
+        builder.setPositiveButton("Got it", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.v("Data", "git");
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.rgb(57,31,103)));
     }
 
     @Override
