@@ -30,3 +30,6 @@ Now for the tricky part, you have 2 options of configuring the backend applicati
 - Android SDK (10.0 ver.)
 - Patience
 - Coffee
+
+-----
+Broad documentation of the application, written in Polish avaiable [here](https://www.overleaf.com/read/jhgbjydjrgyt).
