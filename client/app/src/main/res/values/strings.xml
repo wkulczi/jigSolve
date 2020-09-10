@@ -5,7 +5,12 @@
     <string name="activity_tittle_home">Home</string>
     <string name="activity_tittle_result">Result</string>
 
-    <string name="help_info"> help text here</string>
+    <string name="help_info"> To find a place where the puzzle is, first upload a photo of the entire puzzle\'s picture.
+        \nTo do this, click ADD PICTURE button.
+        \nThen add a photo of this specific puzzle.
+        \nThis is done by pressing ADD PUZZLE button.
+        \nThe last step is to press the PROCESS button to obtain the result picture.
+    </string>
 
     <!-- Toasts-->
     <string name="load_picture_warning">Load picture image first.</string>
