@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.util.TypedValue;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,6 +19,11 @@ import androidx.annotation.Nullable;
 import com.example.jigsolveclient.R;
 import com.example.jigsolveclient.base.BaseActivity;
 import com.example.jigsolveclient.navigator.Navigator;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.LoadAdError;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +37,8 @@ public class HomeActivity extends BaseActivity implements HomeView {
     private static Integer REQUEST_CAMERA = 1;
     private static Integer SELECT_FILE = 0;
 
+    private InterstitialAd mInterstitialAd;
+
     @BindView(R.id.picture_img)
     ImageView puzzlePictureImage;
 
@@ -42,6 +50,8 @@ public class HomeActivity extends BaseActivity implements HomeView {
 
     @BindView(R.id.process_button)
     Button processButton;
+
+    private AdView mAdView;
 
     HomePresenter presenter;
 
@@ -76,8 +86,12 @@ public class HomeActivity extends BaseActivity implements HomeView {
         } else if (pictureImage == null) {
             showPictureImgRequired();
         } else {
-            //TODO: tu coś musi być ale nie wiem co
-            Navigator.startResult(this);
+            if(mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            } else {
+               Navigator.startResult(this);
+               finish();
+            }
         }
     }
 
@@ -117,7 +131,6 @@ public class HomeActivity extends BaseActivity implements HomeView {
                         e.printStackTrace();
                     }
 
-
                 }
             }
         }
@@ -131,6 +144,54 @@ public class HomeActivity extends BaseActivity implements HomeView {
         presenter = new HomePresenter();
 
         presenter.setView(this);
+
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener(){
+            @Override
+            public void onAdLoaded() {
+                }
+
+            @Override
+            public void onAdFailedToLoad(LoadAdError loadAdError) {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+            @Override
+            public void onAdClosed() {
+                // Code to be executed when the interstitial ad is closed.
+                Navigator.startResult(HomeActivity.this);
+                finish();
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        if(mAdView != null) {
+            mAdView.pause();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mAdView != null) {
+            mAdView.resume();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(mAdView != null) {
+            mAdView.destroy();
+        }
+        super.onDestroy();
     }
 
     @Override

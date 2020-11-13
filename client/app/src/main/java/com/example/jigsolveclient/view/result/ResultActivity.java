@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.example.jigsolveclient.R;
 import com.example.jigsolveclient.base.BaseActivity;
+import com.example.jigsolveclient.navigator.Navigator;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -26,7 +27,7 @@ public class ResultActivity extends BaseActivity implements ResultView {
     @OnClick(R.id.reset_button)
     protected void onResetButtonClick() {
         resetResultPicture();
-        finish();
+        Navigator.startHome(this);
     }
 
     public static Intent getStartingIntent(Context context) {

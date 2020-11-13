@@ -20,7 +20,8 @@
 
 
         <activity android:name=".view.splash.SplashActivity"
-            android:theme="@style/AppTheme.Splash">
+            android:theme="@style/AppTheme.Splash"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,17 +29,26 @@
         </activity>
         <activity android:name=".view.start.StartActivity"
             android:label="@string/activity_tittle_start"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".view.home.HomeActivity"
             android:label="@string/activity_tittle_home"
-            android:parentActivityName=".view.start.StartActivity">
+            android:parentActivityName=".view.start.StartActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".view.result.ResultActivity"
             android:label="@string/activity_tittle_result"
-            android:parentActivityName=".view.home.HomeActivity"/>
+            android:parentActivityName=".view.home.HomeActivity"
+            android:screenOrientation="portrait"/>
 
-        <activity android:name=".view.picture.PictureLoadActivity" />
+        <activity android:name=".view.picture.PictureLoadActivity"
+            android:screenOrientation="portrait"/>
+
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
 
     </application>
 
