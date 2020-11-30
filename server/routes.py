@@ -1,9 +1,6 @@
 from flask import request, send_file
-
-from flask import Flask
+from app import app
 import sift
-
-app = Flask(__name__)
 
 
 @app.route("/")
@@ -24,7 +21,6 @@ def post_entire_puzzles_route():
     entire_puzzles = request.files['picture']
     filename = 'images/cale_puzzle.png'
     entire_puzzles.save(filename)
-    # print('Entire puzzles image saved')
     return "You send entire puzzles!"
 
 
