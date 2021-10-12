@@ -3,7 +3,7 @@ kiwisolver==1.2.0
 matplotlib==3.2.1
 numpy==1.18.4
 opencv-contrib-python==3.4.2.16
-opencv-python==3.4.2.16
+opencv-python==3.4.7.28
 pyparsing==2.4.7
 python-dateutil==2.8.1
 six==1.15.0
